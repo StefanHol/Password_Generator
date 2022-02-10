@@ -54,10 +54,10 @@ class PasswordGenerator():
         self.exclude_chars = excludeschars
         self._drop_chars_()
 
-    def set_length(self, length = 12) -> None:
+    def set_length(self, length=12) -> None:
         self.length = max([length, 8])
 
-    def set_block_length(self, length = 4) -> None:
+    def set_block_length(self, length=4) -> None:
         self.block_length = max([length, 1])
 
     def _drop_char_(self, string_list, exclude_chars) -> str:
@@ -87,7 +87,7 @@ class PasswordGenerator():
         password = ''  # empty string for password
         pool = self.lower + self.upper + self.symbols + self.num  # the selection of characters used
 
-        for i in range(self.length):
+        for i in range(0, self.length):
             if i == uppercase_loc:  # this is to ensure there is at least one uppercase
                 password += secrets.choice(self.upper)
             elif i == lowercase_loc:  # this is to ensure there is at least one uppercase
@@ -118,9 +118,10 @@ class PasswordGenerator():
                 return get(self.upper) + get(lower_vovels) + get(self.lower) + get(self.num)
 
         def join_password():
-            return self.block_separator.join([block() for i in range(self.block_length)])
+            return self.block_separator.join([block() for _ in range(self.block_length)])
 
         return join_password()
+
 
 if __name__ == '__main__':
     pw = PasswordGenerator()
