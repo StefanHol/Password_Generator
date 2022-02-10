@@ -4,72 +4,76 @@ import secrets
 import re
 
 
-class password_generator():
+class PasswordGenerator():
 
     def __init__(self):
+        self.lower = ""
+        self.upper = ""
+        self.num = ""
+        self.symbols = ""
         self.length = 12
         self.block_length = 4
         self.block_separator = "-"
-        self.set_lower()
-        self.set_upper()
-        self.set_numbers()
+        self._set_lower_()
+        self._set_upper_()
+        self._set_numbers_()
         self.set_symbols()
         self.exclude_chars = ""
 
-    def reset_chars(self):
-        self.set_lower()
-        self.set_upper()
-        self.set_numbers()
+    def reset_chars(self) -> None:
+        self._set_lower_()
+        self._set_upper_()
+        self._set_numbers_()
         self.set_symbols()
 
-    def reset_symbols(self):
+    def reset_symbols(self) -> None:
         self.set_symbols()
 
-    def set_lower(self, chars=string.ascii_lowercase):
+    def _set_lower_(self, chars=string.ascii_lowercase) -> None:
         self.lower = chars
 
-    def set_upper(self, chars=string.ascii_uppercase):
+    def _set_upper_(self, chars=string.ascii_uppercase) -> None:
         self.upper = chars
 
-    def set_numbers(self, chars=string.digits):
+    def _set_numbers_(self, chars=string.digits) -> None:
         self.num = chars
 
-    def set_symbols(self, symbols=string.punctuation):
+    def set_symbols(self, symbols=string.punctuation) -> None:
         self.symbols = symbols
 
-    def set_hardcoresymbols(self):
+    def set_hardcore_symbols(self) -> None:
         self.symbols = self.get_standard_symbols() + "ÄÜÖöäüéáí±"
 
-    def get_standard_symbols(self):
+    def get_standard_symbols(self) -> str:
         return string.punctuation
 
-    def set_block_separator(self, separator="-"):
+    def set_block_separator(self, separator="-") -> None:
         self.block_separator = separator
 
-    def set_excludeschars(self, excludeschars):
+    def set_exclude_chars(self, excludeschars) -> None:
         self.exclude_chars = excludeschars
-        self.dorp_chars()
+        self._drop_chars_()
 
-    def drop_char(self, stringlist, excludeschars):
-        if len(excludeschars) > 0:
-            return re.sub('[' + excludeschars + ']', '', stringlist)
-        else:
-            return stringlist
-
-    def set_length(self, length = 12):
+    def set_length(self, length = 12) -> None:
         self.length = max([length, 8])
 
-    def set_block_length(self, length = 4):
+    def set_block_length(self, length = 4) -> None:
         self.block_length = max([length, 1])
 
-    def dorp_chars(self):
-        self.lower = self.drop_char(string.ascii_lowercase, self.exclude_chars)
-        self.upper = self.drop_char(string.ascii_uppercase, self.exclude_chars)
-        self.num = self.drop_char(string.digits, self.exclude_chars)
-        if len(self.symbols) > 0:
-            self.symbols = self.drop_char(self.symbols, self.exclude_chars)
+    def _drop_char_(self, string_list, exclude_chars) -> str:
+        if len(exclude_chars) > 0:
+            return re.sub('[' + exclude_chars + ']', '', string_list)
+        else:
+            return string_list
 
-    def password_generator(self):
+    def _drop_chars_(self) -> None:
+        self.lower = self._drop_char_(string.ascii_lowercase, self.exclude_chars)
+        self.upper = self._drop_char_(string.ascii_uppercase, self.exclude_chars)
+        self.num = self._drop_char_(string.digits, self.exclude_chars)
+        if len(self.symbols) > 0:
+            self.symbols = self._drop_char_(self.symbols, self.exclude_chars)
+
+    def password_generator(self) -> str:
         """ Function that generates a password given a length
         minimum leght = 8
         """
@@ -101,7 +105,7 @@ class password_generator():
         random.shuffle(password)
         return ''.join(password)  # returns the string
 
-    def blocked_password_generator(self):
+    def blocked_password_generator(self) -> str:
         lower_vovels = "eaiou"
 
         def get(corpus):
@@ -119,13 +123,13 @@ class password_generator():
         return join_password()
 
 if __name__ == '__main__':
-    pw = password_generator()
+    pw = PasswordGenerator()
     print("_________________")
     print("password_generator")
     print("_________________")
     pw.reset_chars()
     pw.set_symbols("!-_.,")
-    pw.set_excludeschars("I1lO0")
+    pw.set_exclude_chars("I1lO0")
     pw.set_length(20)
     for i in range(10):
         print(pw.password_generator())
@@ -133,14 +137,14 @@ if __name__ == '__main__':
     print("_________________")
     pw.reset_chars()
     pw.set_symbols("")
-    pw.set_excludeschars("I1lO0")
+    pw.set_exclude_chars("I1lO0")
     pw.set_length(30)
     for i in range(10):
         print(pw.password_generator())
 
     print("____Hardcore______")
     pw.reset_chars()
-    pw.set_hardcoresymbols()
+    pw.set_hardcore_symbols()
     pw.set_length(30)
     for i in range(10):
         print(pw.password_generator())
@@ -150,7 +154,7 @@ if __name__ == '__main__':
     print("_________________")
     pw.reset_chars()
     pw.set_symbols("")
-    pw.set_excludeschars("I1lO0")
+    pw.set_exclude_chars("I1lO0")
     pw.set_block_length(4)
     for i in range(10):
         print(pw.blocked_password_generator())
@@ -158,6 +162,6 @@ if __name__ == '__main__':
     pw.set_block_length(20)
     pw.set_symbols("!-_,.#*")
     pw.set_block_separator("_")
-    pw.set_excludeschars("I1lO0")
+    pw.set_exclude_chars("I1lO0")
     for _ in range(5):
         print(pw.blocked_password_generator())
