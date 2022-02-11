@@ -4,7 +4,14 @@ import secrets
 import re
 
 
-class PasswordGenerator():
+def drop_exclude_chars_from_string(string_list, exclude_chars) -> str:
+    if len(exclude_chars) > 0:
+        return re.sub('[' + exclude_chars + ']', '', string_list)
+    else:
+        return string_list
+
+
+class PasswordGenerator:
 
     def __init__(self):
         self.lower = ""
@@ -12,13 +19,15 @@ class PasswordGenerator():
         self.num = ""
         self.symbols = ""
         self.length = 12
-        self.block_length = 4
+        self.block_counts = 4
         self.block_separator = "-"
         self._set_lower_()
         self._set_upper_()
         self._set_numbers_()
         self.set_symbols()
+        self.standard_symbols = string.punctuation
         self.exclude_chars = ""
+        self._hardcore_symbols_preset_ = "ÄÜÖöäüéáí±"
 
     def reset_chars(self) -> None:
         self._set_lower_()
@@ -42,40 +51,34 @@ class PasswordGenerator():
         self.symbols = symbols
 
     def set_hardcore_symbols(self) -> None:
-        self.symbols = self.get_standard_symbols() + "ÄÜÖöäüéáí±"
+        self.symbols = self.get_standard_symbols() + self._hardcore_symbols_preset_
 
     def get_standard_symbols(self) -> str:
-        return string.punctuation
+        return self.standard_symbols
 
     def set_block_separator(self, separator="-") -> None:
         self.block_separator = separator
 
-    def set_exclude_chars(self, excludeschars) -> None:
-        self.exclude_chars = excludeschars
+    def set_exclude_chars(self, exclude_chars) -> None:
+        self.exclude_chars = exclude_chars
         self._drop_chars_()
 
     def set_length(self, length=12) -> None:
         self.length = max([length, 8])
 
-    def set_block_length(self, length=4) -> None:
-        self.block_length = max([length, 1])
-
-    def _drop_char_(self, string_list, exclude_chars) -> str:
-        if len(exclude_chars) > 0:
-            return re.sub('[' + exclude_chars + ']', '', string_list)
-        else:
-            return string_list
+    def set_block_counts(self, counts=4) -> None:
+        self.block_counts = max([counts, 2])
 
     def _drop_chars_(self) -> None:
-        self.lower = self._drop_char_(string.ascii_lowercase, self.exclude_chars)
-        self.upper = self._drop_char_(string.ascii_uppercase, self.exclude_chars)
-        self.num = self._drop_char_(string.digits, self.exclude_chars)
+        self.lower = drop_exclude_chars_from_string(string.ascii_lowercase, self.exclude_chars)
+        self.upper = drop_exclude_chars_from_string(string.ascii_uppercase, self.exclude_chars)
+        self.num = drop_exclude_chars_from_string(string.digits, self.exclude_chars)
         if len(self.symbols) > 0:
-            self.symbols = self._drop_char_(self.symbols, self.exclude_chars)
+            self.symbols = drop_exclude_chars_from_string(self.symbols, self.exclude_chars)
 
     def password_generator(self) -> str:
         """ Function that generates a password given a length
-        minimum leght = 8
+        minimum length = 8
         """
 
         # this is to ensure there is at least one upper, lower, symbol and number
@@ -87,17 +90,17 @@ class PasswordGenerator():
         password = ''  # empty string for password
         pool = self.lower + self.upper + self.symbols + self.num  # the selection of characters used
 
-        for i in range(0, self.length):
-            if i == uppercase_loc:  # this is to ensure there is at least one uppercase
+        for element in range(0, self.length):
+            if uppercase_loc == element:  # this is to ensure there is at least one uppercase
                 password += secrets.choice(self.upper)
-            elif i == lowercase_loc:  # this is to ensure there is at least one uppercase
+            elif lowercase_loc == element:  # this is to ensure there is at least one uppercase
                 password += secrets.choice(self.lower)
-            elif i == symbol_loc:  # this is to ensure there is at least one symbol
+            elif symbol_loc == element:  # this is to ensure there is at least one symbol
                 if len(self.symbols) > 0:
                     password += secrets.choice(self.symbols)
                 else:
                     password += secrets.choice(pool)
-            elif i == number_loc:  # this is to ensure there is at least one number
+            elif number_loc == element:  # this is to ensure there is at least one number
                 password += secrets.choice(self.num)
             else:  # adds a random character from pool
                 password += secrets.choice(pool)
@@ -118,7 +121,7 @@ class PasswordGenerator():
                 return get(self.upper) + get(lower_vovels) + get(self.lower) + get(self.num)
 
         def join_password():
-            return self.block_separator.join([block() for _ in range(self.block_length)])
+            return self.block_separator.join([block() for _ in range(self.block_counts)])
 
         return join_password()
 
@@ -156,11 +159,11 @@ if __name__ == '__main__':
     pw.reset_chars()
     pw.set_symbols("")
     pw.set_exclude_chars("I1lO0")
-    pw.set_block_length(4)
+    pw.set_block_counts(4)
     for i in range(10):
         print(pw.blocked_password_generator())
     print("_________________")
-    pw.set_block_length(20)
+    pw.set_block_counts(20)
     pw.set_symbols("!-_,.#*")
     pw.set_block_separator("_")
     pw.set_exclude_chars("I1lO0")
