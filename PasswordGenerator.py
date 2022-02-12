@@ -92,7 +92,7 @@ class PasswordGenerator:
         self.length = max([length, 8])
 
     def set_block_counts(self, counts=4) -> None:
-        self.block_counts = max([counts, 2])
+        self.block_counts = max([counts, 1])
 
     def _drop_chars_(self) -> None:
         self.lower = drop_exclude_chars_from_string(string.ascii_lowercase, self.exclude_chars)
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     for i in range(10):
         print(pw.blocked_password_generator())
     print("_________________")
-    pw.set_block_counts(20)
+    pw.set_block_counts(10)
     pw.set_symbols("!-_,.#*")
     pw.set_block_separator("_")
     pw.set_exclude_chars("I1lO0")
@@ -220,4 +220,8 @@ if __name__ == '__main__':
     print("_________________")
     print("change block order")
     pw.set_block_character_order("luuvvnn")
+    print(pw.blocked_password_generator())
+    print("_________________")
+    pw.set_block_counts(1)
+    pw.set_block_character_order("uvlvll")
     print(pw.blocked_password_generator())
