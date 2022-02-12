@@ -20,6 +20,7 @@ class PasswordGenerator:
         self.symbols = ""
         self.length = 12
         self.block_counts = 4
+        self.block_character_order = "Uvlns"
         self.block_separator = "-"
         self._set_lower_()
         self._set_upper_()
@@ -52,6 +53,30 @@ class PasswordGenerator:
 
     def set_hardcore_symbols(self) -> None:
         self.symbols = self.get_standard_symbols() + self._hardcore_symbols_preset_
+
+    def set_block_character_order(self, order = "Uvlns") -> None:
+        '''
+            U or u: upper character
+            V or v: lower vovel
+            L or l: lower character
+            N or n: number
+            S or s: symbol
+        :param order: str
+        :return:
+        '''
+        available = "uvlns"
+        allowed = "U or u: upper character\n" + \
+                  "V or v: lower vovel\n" + \
+                  "L or l: lower character\n" + \
+                  "N or n: number\n" + \
+                  "S or s: symbol"
+        if order == "":
+            order = "Uvlns"
+        for each in order:
+            if not each.lower() in available:
+                print("Wrong character set. '{}' is not allowed. use:\n{}\n{} will be skipped".format(each, allowed,
+                                                                                                       each))
+        self.block_character_order = order
 
     def get_standard_symbols(self) -> str:
         return self.standard_symbols
@@ -112,13 +137,36 @@ class PasswordGenerator:
         lower_vovels = "eaiou"
 
         def get(corpus):
-            return secrets.choice(corpus)
+            if len(corpus) > 0:
+                return secrets.choice(corpus)
+            else:
+                return ""
 
         def block():
-            if len(self.symbols) > 0:
-                return get(self.upper) + get(lower_vovels) + get(self.lower) + get(self.num) + get(self.symbols)
-            else:
-                return get(self.upper) + get(lower_vovels) + get(self.lower) + get(self.num)
+            '''
+            U or u: upper character
+            V or v: lower vovel
+            L or l: lower character
+            N or n: number
+            S or s: symbol
+
+            :return: random character symbol block as str
+            '''
+            pw_block = ""
+
+            for each in self.block_character_order:
+                if each.lower() == "u":
+                    pw_block += get(self.upper)
+                if each.lower() == "v":
+                    pw_block += get(lower_vovels)
+                if each.lower() == "l":
+                    pw_block += get(self.lower)
+                if each.lower() == "n":
+                    pw_block += get(self.num)
+                if each.lower() == "s":
+                    pw_block += get(self.symbols)
+
+            return pw_block
 
         def join_password():
             return self.block_separator.join([block() for _ in range(self.block_counts)])
@@ -169,3 +217,7 @@ if __name__ == '__main__':
     pw.set_exclude_chars("I1lO0")
     for _ in range(5):
         print(pw.blocked_password_generator())
+    print("_________________")
+    print("change block order")
+    pw.set_block_character_order("luuvvnn")
+    print(pw.blocked_password_generator())
