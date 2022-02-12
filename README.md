@@ -1,14 +1,5 @@
 # Password Generator
 
-### Load Library directory
-
-
-```python
-import os, sys
-parentdir = os.path.dirname(os.getcwd())
-sys.path.append(parentdir)
-```
-
 ## Import Lib
 
 
